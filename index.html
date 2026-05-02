@@ -8,7 +8,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Material Symbols Outlined" rel="stylesheet" />
 
 <style>
 
@@ -246,30 +245,6 @@ border-radius:20px;
 width:90%;
 max-width:650px;
 box-shadow:0 20px 60px rgba(0,0,0,0.15);
-position:relative;
-}
-
-/* CLOSE BUTTON */
-
-.modal-close{
-position:absolute;
-top:12px;
-right:12px;
-background:#f1f5f9;
-border:none;
-width:36px;
-height:36px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-font-size:16px;
-transition:0.2s;
-}
-
-.modal-close:hover{
-background:#e2e8f0;
 }
 
 /* FLOATING */
@@ -294,43 +269,6 @@ transition:0.25s;
 
 .floating:hover{
 transform:scale(1.08);
-}
-
-/* AREA */
-
-.area-group{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:12px;
-margin-top:10px;
-}
-
-.area-btn{
-background:#f1f5f9;
-border:1px solid #e2e8f0;
-border-radius:14px;
-padding:12px;
-text-align:center;
-cursor:pointer;
-transition:0.2s;
-font-size:14px;
-font-weight:500;
-}
-
-.area-btn:hover{
-background:#e2e8f0;
-}
-
-.area-btn.active{
-background:var(--primary-soft);
-border-color:var(--primary);
-color:var(--primary);
-}
-
-.area-icon{
-display:block;
-font-size:26px;
-margin-bottom:5px;
 }
 
 </style>
@@ -395,37 +333,21 @@ Maintenance Dashboard
 <div id="formModal" class="modal">
 <div class="modal-content">
 
-<button class="modal-close" onclick="closeForm()">
-<i class="fa-solid fa-xmark"></i>
-</button>
-
 <h3>Aktivitas Baru</h3>
 
 <br>
 
 <label>Area</label>
-
-<div class="area-group">
-  <div class="area-btn active" onclick="selectArea('Proses', this)">
-    <span class="material-symbols-outlined area-icon">local_fire_department</span>
-    Proses
-  </div>
-
-  <div class="area-btn" onclick="selectArea('Filling', this)">
-    <span class="material-symbols-outlined area-icon">water_drop</span>
-    Filling
-  </div>
-
-  <div class="area-btn" onclick="selectArea('Packing', this)">
-    <span class="material-symbols-outlined area-icon">inventory_2</span>
-    Packing
-  </div>
-</div>
+<select id="area">
+<option>Proses</option>
+<option>Filling</option>
+<option>Packing</option>
+</select>
 
 <br><br>
 
 <label>Mesin</label>
-<select id="mesin"></select>
+<input id="mesin">
 
 <br><br>
 
@@ -439,7 +361,8 @@ Maintenance Dashboard
 
 <br><br>
 
-<button class="btn-submit" onclick="saveActivity()">Simpan</button>
+<button class="btn-add" onclick="saveActivity()">Simpan</button>
+<button class="btn-back" onclick="closeForm()">Tutup</button>
 
 </div>
 </div>
@@ -465,77 +388,22 @@ Maintenance Dashboard
 
 <script>
 
-/* JS TIDAK DIUBAH */
-
 const scriptURL="https://script.google.com/macros/s/AKfycbxvvEwX-6UPRxU0sd5_U1pyvVVVKyVgz2x-qPvii92ZXNiEiyy_PczSqNAqWaaAIGfD/exec"
 
 let activities=[]
 let editIndex=null
-let selectedArea = "Proses"
 
 const formModal=document.getElementById("formModal")
 const previewModal=document.getElementById("previewModal")
 const activityTable=document.getElementById("activityTable")
 
-function openForm(){
-  formModal.classList.add("show")
-  updateMesin()
-}
-function closeForm(){
-formModal.classList.remove("show");
-clearForm(); 
-selectedArea = "Proses"
-
-document.querySelectorAll(".area-btn")
-  .forEach(btn=>btn.classList.remove("active"))
-
-document.querySelector(".area-btn").classList.add("active")
-
-updateMesin()
-
-}
+function openForm(){formModal.classList.add("show")}
+function closeForm(){formModal.classList.remove("show");clearForm()}
 function openPreview(){generateReport();previewModal.classList.add("show")}
 function closePreview(){previewModal.classList.remove("show")}
 
-function selectArea(area, el){
-  selectedArea = area
-
-  document.querySelectorAll(".area-btn")
-    .forEach(btn => btn.classList.remove("active"))
-
-  el.classList.add("active")
-
-  updateMesin()
-}
-
-function updateMesin(){
-  const area = selectedArea
-  const mesin = document.getElementById("mesin")
-
-  let list = []
-
-  if(area === "Proses"){
-    list = ["Sterilizer","Aseptic Tank","Mixing Tank 1"]
-  }
-  else if(area === "Filling"){
-    list = ["Combibloc 1","Combibloc 2","Combibloc 3","Tetra A3 Flex"]
-  }
-  else if(area === "Packing"){
-    list = ["Traypacker 1","Straw App 1","Buffer Table 1"]
-  }
-
-  mesin.innerHTML = ""
-
-  list.forEach(item=>{
-    const option = document.createElement("option")
-    option.value = item
-    option.textContent = item
-    mesin.appendChild(option)
-  })
-}
-
 function saveActivity(){
-const data={area:selectedArea,mesin:mesin.value,downtime:downtime.value,action:action.value}
+const data={area:area.value,mesin:mesin.value,downtime:downtime.value,action:action.value}
 if(editIndex==null){activities.push(data)}else{activities[editIndex]=data;editIndex=null}
 saveToLocal();renderTable();closeForm()
 }
@@ -589,26 +457,12 @@ ${a.area} •> ${a.mesin}
 }
 
 function edit(i){
-  const data = activities[i]
-  editIndex = i
-
-  selectedArea = data.area
-
-  document.querySelectorAll(".area-btn")
-    .forEach(btn=>{
-      btn.classList.remove("active")
-      if(btn.innerText.includes(selectedArea)){
-        btn.classList.add("active")
-      }
-    })
-
-  updateMesin()
-
-  document.getElementById("mesin").value = data.mesin
-  document.getElementById("downtime").value = data.downtime
-  document.getElementById("action").value = data.action
-
-  formModal.classList.add("show")
+editIndex=i
+area.value=activities[i].area
+mesin.value=activities[i].mesin
+downtime.value=activities[i].downtime
+action.value=activities[i].action
+openForm()
 }
 
 function hapus(i){activities.splice(i,1);saveToLocal();renderTable()}
