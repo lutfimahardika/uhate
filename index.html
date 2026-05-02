@@ -333,7 +333,7 @@ Maintenance Dashboard
 <div id="formModal" class="modal">
 <div class="modal-content">
 
-<h3>Tambah Aktivitas</h3>
+<h3>Aktivitas Baru</h3>
 
 <br>
 
@@ -471,7 +471,11 @@ function generateReport(){
 const tanggal=document.getElementById("tanggal").value
 const date=new Date(tanggal)
 const hari=date.toLocaleDateString('id-ID',{weekday:'long'})
-const tgl=date.toLocaleDateString('id-ID')
+const tgl = date.toLocaleDateString('id-ID',{
+  day:'2-digit',
+  month:'long',
+  year:'numeric'
+})
 const shift=document.getElementById("shift").value
 
 let text=`${hari}, ${tgl}, ${shift}\n`
