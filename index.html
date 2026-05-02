@@ -246,6 +246,30 @@ border-radius:20px;
 width:90%;
 max-width:650px;
 box-shadow:0 20px 60px rgba(0,0,0,0.15);
+position:relative;
+}
+
+/* CLOSE BUTTON */
+
+.modal-close{
+position:absolute;
+top:12px;
+right:12px;
+background:#f1f5f9;
+border:none;
+width:36px;
+height:36px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+font-size:16px;
+transition:0.2s;
+}
+
+.modal-close:hover{
+background:#e2e8f0;
 }
 
 /* FLOATING */
@@ -371,6 +395,10 @@ Maintenance Dashboard
 <div id="formModal" class="modal">
 <div class="modal-content">
 
+<button class="modal-close" onclick="closeForm()">
+<i class="fa-solid fa-xmark"></i>
+</button>
+
 <h3>Aktivitas Baru</h3>
 
 <br>
@@ -411,8 +439,7 @@ Maintenance Dashboard
 
 <br><br>
 
-<button class="btn-add" onclick="saveActivity()">Simpan</button>
-<button class="btn-back" onclick="closeForm()">Tutup</button>
+<button class="btn-submit" onclick="saveActivity()">Simpan</button>
 
 </div>
 </div>
@@ -437,6 +464,8 @@ Maintenance Dashboard
 </div>
 
 <script>
+
+/* JS TIDAK DIUBAH */
 
 const scriptURL="https://script.google.com/macros/s/AKfycbxvvEwX-6UPRxU0sd5_U1pyvVVVKyVgz2x-qPvii92ZXNiEiyy_PczSqNAqWaaAIGfD/exec"
 
@@ -563,10 +592,8 @@ function edit(i){
   const data = activities[i]
   editIndex = i
 
-  // Set state area dulu
   selectedArea = data.area
 
-  // Update UI tombol area
   document.querySelectorAll(".area-btn")
     .forEach(btn=>{
       btn.classList.remove("active")
@@ -575,15 +602,12 @@ function edit(i){
       }
     })
 
-  // Update dropdown mesin sesuai area
   updateMesin()
 
-  // Isi form
   document.getElementById("mesin").value = data.mesin
   document.getElementById("downtime").value = data.downtime
   document.getElementById("action").value = data.action
 
-  // Buka modal terakhir (biar tidak ketimpa reset)
   formModal.classList.add("show")
 }
 
