@@ -465,8 +465,6 @@ Maintenance Dashboard
 
 <script>
 
-/* JS TIDAK DIUBAH */
-
 const scriptURL="https://script.google.com/macros/s/AKfycbxvvEwX-6UPRxU0sd5_U1pyvVVVKyVgz2x-qPvii92ZXNiEiyy_PczSqNAqWaaAIGfD/exec"
 
 let activities=[]
@@ -500,25 +498,48 @@ function loadHeader(){
   }
 }
 
+/* =========================
+   EVENT LISTENER HEADER
+========================= */
+
+document.getElementById("tanggal").addEventListener("change", saveHeader)
+document.getElementById("shift").addEventListener("change", saveHeader)
+document.getElementById("teknisi").addEventListener("input", saveHeader)
+
+/* =========================
+   MODAL
+========================= */
+
 function openForm(){
   formModal.classList.add("show")
   updateMesin()
 }
+
 function closeForm(){
-formModal.classList.remove("show");
-clearForm(); 
-selectedArea = "Proses"
+  formModal.classList.remove("show");
+  clearForm(); 
+  selectedArea = "Proses"
 
-document.querySelectorAll(".area-btn")
-  .forEach(btn=>btn.classList.remove("active"))
+  document.querySelectorAll(".area-btn")
+    .forEach(btn=>btn.classList.remove("active"))
 
-document.querySelector(".area-btn").classList.add("active")
+  document.querySelector(".area-btn").classList.add("active")
 
-updateMesin()
-
+  updateMesin()
 }
-function openPreview(){generateReport();previewModal.classList.add("show")}
-function closePreview(){previewModal.classList.remove("show")}
+
+function openPreview(){
+  generateReport()
+  previewModal.classList.add("show")
+}
+
+function closePreview(){
+  previewModal.classList.remove("show")
+}
+
+/* =========================
+   AREA
+========================= */
 
 function selectArea(area, el){
   selectedArea = area
@@ -557,58 +578,77 @@ function updateMesin(){
   })
 }
 
+/* =========================
+   ACTIVITY
+========================= */
+
 function saveActivity(){
-const data={area:selectedArea,mesin:mesin.value,downtime:downtime.value,action:action.value}
-if(editIndex==null){activities.push(data)}else{activities[editIndex]=data;editIndex=null}
-saveToLocal();renderTable();closeForm()
+  const data={
+    area:selectedArea,
+    mesin:mesin.value,
+    downtime:downtime.value,
+    action:action.value
+  }
+
+  if(editIndex==null){
+    activities.push(data)
+  }else{
+    activities[editIndex]=data
+    editIndex=null
+  }
+
+  saveToLocal()
+  renderTable()
+  closeForm()
 }
 
 function renderTable(){
-activityTable.innerHTML=""
-activities.forEach((a,i)=>{
-let badgeClass=""
-if(a.area=="Proses") badgeClass="proses"
-if(a.area=="Filling") badgeClass="filling"
-if(a.area=="Packing") badgeClass="packing"
+  activityTable.innerHTML=""
 
-const actionNumbered = a.action
-.split("\n")
-.filter(line => line.trim() !== "")
-.map((line,i)=>`${i+1}. ${line}`)
-.join("<br>")
+  activities.forEach((a,i)=>{
+    let badgeClass=""
+    if(a.area=="Proses") badgeClass="proses"
+    if(a.area=="Filling") badgeClass="filling"
+    if(a.area=="Packing") badgeClass="packing"
 
-activityTable.innerHTML+=`
-<div class="card">
+    const actionNumbered = a.action
+      .split("\n")
+      .filter(line => line.trim() !== "")
+      .map((line,i)=>`${i+1}. ${line}`)
+      .join("<br>")
 
-<div class="card-header">
-<div class="badge ${badgeClass}">
-${a.area} •> ${a.mesin}
-</div>
+    activityTable.innerHTML+=`
+    <div class="card">
 
-<div>
-<button class="icon-btn icon-edit" onclick="edit(${i})">
-<i class="fa-solid fa-pen"></i>
-</button>
-<button class="icon-btn icon-delete" onclick="hapus(${i})">
-<i class="fa-solid fa-trash"></i>
-</button>
-</div>
-</div>
+      <div class="card-header">
+        <div class="badge ${badgeClass}">
+          ${a.area} •> ${a.mesin}
+        </div>
 
-<div class="card-section">
-<div class="card-label">Downtime</div>
-<div class="card-text">${a.downtime}</div>
-</div>
+        <div>
+          <button class="icon-btn icon-edit" onclick="edit(${i})">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="icon-btn icon-delete" onclick="hapus(${i})">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
 
-<div class="card-divider"></div>
+      <div class="card-section">
+        <div class="card-label">Downtime</div>
+        <div class="card-text">${a.downtime}</div>
+      </div>
 
-<div class="card-section">
-<div class="card-label">Action</div>
-<div class="card-text">${actionNumbered}</div>
-</div>
+      <div class="card-divider"></div>
 
-</div>`
-})
+      <div class="card-section">
+        <div class="card-label">Action</div>
+        <div class="card-text">${actionNumbered}</div>
+      </div>
+
+    </div>`
+  })
 }
 
 function edit(i){
@@ -634,76 +674,122 @@ function edit(i){
   formModal.classList.add("show")
 }
 
-function hapus(i){activities.splice(i,1);saveToLocal();renderTable()}
+function hapus(i){
+  activities.splice(i,1)
+  saveToLocal()
+  renderTable()
+}
+
+/* =========================
+   REPORT
+========================= */
 
 function generateReport(){
-const tanggal=document.getElementById("tanggal").value
-const date=new Date(tanggal)
-const hari=date.toLocaleDateString('id-ID',{weekday:'long'})
-const tgl = date.toLocaleDateString('id-ID',{
-  day:'2-digit',
-  month:'long',
-  year:'numeric'
-})
-const shift=document.getElementById("shift").value
+  const tanggal=document.getElementById("tanggal").value
+  const date=new Date(tanggal)
 
-let text=`${hari}, ${tgl}, ${shift}\n`
+  const hari=date.toLocaleDateString('id-ID',{weekday:'long'})
+  const tgl = date.toLocaleDateString('id-ID',{
+    day:'2-digit',
+    month:'long',
+    year:'numeric'
+  })
 
-const grouped={}
-activities.forEach(a=>{
-if(!grouped[a.area]) grouped[a.area]={}
-if(!grouped[a.area][a.mesin]) grouped[a.area][a.mesin]=[]
-grouped[a.area][a.mesin].push(a)
-})
+  const shift=document.getElementById("shift").value
 
-for(let area in grouped){
-text+=`\n*${area}*\n`
-for(let mesin in grouped[area]){
-text+=`*• ${mesin}*\n`
-grouped[area][mesin].forEach(d=>{
-text+=`> ${d.downtime}\n`
-d.action.split("\n").forEach(a=>{text+=`- ${a}\n`})
-})
+  let text=`${hari}, ${tgl}, ${shift}\n`
+
+  const grouped={}
+
+  activities.forEach(a=>{
+    if(!grouped[a.area]) grouped[a.area]={}
+    if(!grouped[a.area][a.mesin]) grouped[a.area][a.mesin]=[]
+    grouped[a.area][a.mesin].push(a)
+  })
+
+  for(let area in grouped){
+    text+=`\n*${area}*\n`
+    for(let mesin in grouped[area]){
+      text+=`*• ${mesin}*\n`
+      grouped[area][mesin].forEach(d=>{
+        text+=`> ${d.downtime}\n`
+        d.action.split("\n").forEach(a=>{
+          text+=`- ${a}\n`
+        })
+      })
+    }
+  }
+
+  hasil.value=text
 }
+
+function copyText(){
+  hasil.select()
+  document.execCommand("copy")
+  alert("Copied")
 }
 
-hasil.value=text
-}
-
-function copyText(){hasil.select();document.execCommand("copy");alert("Copied")}
+/* =========================
+   PUBLISH
+========================= */
 
 async function publish(){
-const tanggal=document.getElementById("tanggal").value
-const shift=document.getElementById("shift").value
-const teknisi=document.getElementById("teknisi").value
+  const tanggal=document.getElementById("tanggal").value
+  const shift=document.getElementById("shift").value
+  const teknisi=document.getElementById("teknisi").value
 
-const data=activities.map(a=>({tanggal,shift,teknisi,area:a.area,mesin:a.mesin,downtime:a.downtime,action:a.action}))
+  const data=activities.map(a=>({
+    tanggal,shift,teknisi,
+    area:a.area,
+    mesin:a.mesin,
+    downtime:a.downtime,
+    action:a.action
+  }))
 
-try{
-await fetch(scriptURL,{method:"POST",body:JSON.stringify(data)})
-resetData();closePreview();alert("Berhasil Publish")
-}catch{alert("Gagal Publish")}
+  try{
+    await fetch(scriptURL,{method:"POST",body:JSON.stringify(data)})
+    resetData()
+    closePreview()
+    alert("Berhasil Publish")
+  }catch{
+    alert("Gagal Publish")
+  }
 }
 
-function resetData(){activities=[];localStorage.removeItem("activities");renderTable()}
+/* =========================
+   STORAGE
+========================= */
+
+function resetData(){
+  activities=[]
+  localStorage.removeItem("activities")
+  renderTable()
+}
+
 function saveToLocal(){
-	localStorage.setItem("activities",JSON.stringify(activities))
-	saveHeader()
-}
-function loadFromLocal(){
-	const data=localStorage.getItem("activities")
-	if(data){
-		activities=JSON.parse(data)
-		renderTable()
-	}
-}
-function clearForm(){
-	mesin.value=""
-	downtime.value=""
-	action.value=""
+  localStorage.setItem("activities", JSON.stringify(activities))
+  saveHeader() // 🔥 penting: ikut simpan header
 }
 
-loadFromLocal()
+function loadFromLocal(){
+  const data=localStorage.getItem("activities")
+  if(data){
+    activities=JSON.parse(data)
+    renderTable()
+  }
+}
+
+function clearForm(){
+  mesin.value=""
+  downtime.value=""
+  action.value=""
+}
+
+/* =========================
+   INIT
+========================= */
+
+loadHeader()
 loadFromLocal()
 
 </script>
