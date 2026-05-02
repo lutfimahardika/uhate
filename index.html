@@ -333,6 +333,28 @@ font-size:26px;
 margin-bottom:5px;
 }
 
+/* LOADING */
+.loading{
+opacity:0.7;
+pointer-events:none;
+}
+
+.spinner{
+width:18px;
+height:18px;
+border:2px solid #fff;
+border-top:2px solid transparent;
+border-radius:50%;
+display:inline-block;
+animation:spin 0.6s linear infinite;
+margin-right:8px;
+vertical-align:middle;
+}
+
+@keyframes spin{
+to{transform:rotate(360deg);}
+}
+
 </style>
 
 </head>
@@ -457,7 +479,7 @@ Maintenance Dashboard
 <br><br>
 
 <button class="btn-copy" onclick="copyText()">Copy</button>
-<button class="btn-add" onclick="publish()">Publish</button>
+<button id="btnPublish" class="btn-add" onclick="publish()">Publish</button>
 <button class="btn-back" onclick="closePreview()">Tutup</button>
 
 </div>
@@ -559,13 +581,13 @@ function updateMesin(){
   let list = []
 
   if(area === "Proses"){
-    list = ["Sterilizer","Aseptic Tank","Mixing Tank 1"]
+    list = ["Dumping Area", "Powder Tank","Sugar Tank","High Shear Mixer", "Choco Slurry 1", "Choco Slurry 2", "Reception Tank 1", "Reception Tank 2", "Pasteurizer", "Homogenizer GEA", "Pasteurize Tank 1", "Pasteurize Tank 2", "Mixing Tank 1", "Mixing Tank 2", "Storage Tank 1", "Storage Tank 2", "Storage Tank 3", "Storage Tank 4", "Sterilizer", "Homogenizer Tetra", "Aseptic Flex Dosing", "Aseptic Tank 1", "Aseptic Tank 2", "CIP Aseptic", "CIP Non-Aseptic Line 1", "CIP Non-Aseptic Line 2", "CIP Non-Aseptic Line 3", "Linemaker 1&2", "Linemaker 3"]
   }
   else if(area === "Filling"){
-    list = ["Combibloc 1","Combibloc 2","Combibloc 3","Tetra A3 Flex"]
+    list = ["Combibloc 1", "Combibloc 2", "Combibloc 3", "Tetra A3 Flex", "Domino for C1", "Domino for C2", "Domino for C3", "Domino for Tetra"]
   }
   else if(area === "Packing"){
-    list = ["Traypacker 1","Straw App 1","Buffer Table 1"]
+    list = ["Tetra Cap 30 Flex", "Carton Sealer", "Conveyor System 1", "Conveyor System 2", "Conveyor System 3", "Conveyor Buffer 1", "Conveyor Buffer 2", "Conveyor Buffer 3", "Straw Applicator 1", "Straw Applicator 2", "Straw Applicator 3", "Traypacker 1", "Traypacker 2", "Traypacker 3", "Videojet for TP1", "Videojet for TP2", "Videojet for TP3", "Videojet for Cap 30"]
   }
 
   mesin.innerHTML = ""
@@ -734,6 +756,14 @@ function copyText(){
 ========================= */
 
 async function publish(){
+
+  const btn = document.getElementById("btnPublish")
+
+  // 🔥 aktifkan loading
+  btn.classList.add("loading")
+  btn.innerHTML = `<span class="spinner"></span>Publishing...`
+  btn.disabled = true
+
   const tanggal=document.getElementById("tanggal").value
   const shift=document.getElementById("shift").value
   const teknisi=document.getElementById("teknisi").value
@@ -747,15 +777,24 @@ async function publish(){
   }))
 
   try{
-    await fetch(scriptURL,{method:"POST",body:JSON.stringify(data)})
+    await fetch(scriptURL,{
+      method:"POST",
+      body:JSON.stringify(data)
+    })
+
     resetData()
     closePreview()
     alert("Berhasil Publish")
+
   }catch{
     alert("Gagal Publish")
   }
-}
 
+  // 🔄 kembalikan tombol normal
+  btn.classList.remove("loading")
+  btn.innerHTML = "Publish"
+  btn.disabled = false
+}
 /* =========================
    STORAGE
 ========================= */
@@ -785,11 +824,26 @@ function clearForm(){
   action.value=""
 }
 
+function setTodayIfEmpty(){
+  const tanggalInput = document.getElementById("tanggal")
+
+  // Kalau belum ada value (belum pernah disimpan / kosong)
+  if(!tanggalInput.value){
+    const today = new Date()
+    const yyyy = today.getFullYear()
+    const mm = String(today.getMonth()+1).padStart(2,'0')
+    const dd = String(today.getDate()).padStart(2,'0')
+
+    tanggalInput.value = `${yyyy}-${mm}-${dd}`
+  }
+}
+
 /* =========================
    INIT
 ========================= */
 
 loadHeader()
+setTodayIfEmpty()
 loadFromLocal()
 
 </script>
