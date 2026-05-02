@@ -3,850 +3,680 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Maintenance Dashboard</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Material Symbols Outlined" rel="stylesheet" />
 
 <style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root{
---primary:#2563eb;
---primary-soft:#eff6ff;
---danger:#ef4444;
---warning:#f59e0b;
---success:#10b981;
---text:#0f172a;
---subtext:#64748b;
---bg:#f8fafc;
+:root {
+  --bg: #f8f9fa;
+  --white: #ffffff;
+  --border: #e9ecef;
+  --text: #111827;
+  --text-sub: #6b7280;
+  --text-muted: #9ca3af;
+  --primary: #6366f1;
+  --primary-light: #eef2ff;
+  --primary-hover: #4f46e5;
+  --green: #10b981;
+  --green-light: #ecfdf5;
+  --amber: #f59e0b;
+  --amber-light: #fffbeb;
+  --red: #ef4444;
+  --red-light: #fef2f2;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 16px rgba(0,0,0,0.06);
 }
 
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family:'Inter',sans-serif;
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
-body{
-background:var(--bg);
-color:var(--text);
+/* TOPBAR */
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-/* HEADER */
-
-.header{
-background:white;
-padding:18px 28px;
-box-shadow:0 4px 20px rgba(0,0,0,0.04);
-display:flex;
-justify-content:space-between;
-align-items:center;
-position:sticky;
-top:0;
-z-index:50;
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--text);
 }
 
-.header h2{
-font-size:20px;
-font-weight:600;
+.brand-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--primary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
 }
 
-.container{
-padding:25px;
-max-width:1300px;
-margin:auto;
+.topbar-tag {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
 }
+
+/* PAGE */
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 20px 100px;
+}
+
+.page-title { font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+.page-sub   { font-size: 13px; color: var(--text-sub); margin-bottom: 24px; }
 
 /* CARD */
-
-.card{
-background:white;
-padding:20px;
-border-radius:18px;
-box-shadow:0 8px 30px rgba(0,0,0,0.05);
-transition:0.25s ease;
-border:1px solid #f1f5f9;
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
 }
 
-.card:hover{
-transform:translateY(-4px);
-box-shadow:0 15px 40px rgba(0,0,0,0.08);
+/* HEADER CARD */
+.header-card { padding: 20px 24px; margin-bottom: 24px; }
+.header-card-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.7px; color: var(--text-muted); margin-bottom: 16px;
 }
+
+.header-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 16px;
+}
+@media(max-width:600px){ .header-grid{grid-template-columns:1fr;} }
+
+/* FIELDS */
+.field { display:flex; flex-direction:column; gap:6px; }
+.field-label { font-size:12px; font-weight:600; color:var(--text-sub); }
+
+input, select, textarea {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px; color:var(--text);
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 14px;
+  width:100%; outline:none;
+  transition: border-color .15s, box-shadow .15s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color:var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+}
+textarea { resize:vertical; min-height:80px; }
+
+/* SECTION BAR */
+.section-bar {
+  display:flex; align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+}
+.section-bar-left { display:flex; align-items:center; gap:8px; }
+.section-title { font-size:15px; font-weight:700; }
+.pill {
+  background:var(--border); color:var(--text-sub);
+  font-size:11px; font-weight:700;
+  padding:2px 8px; border-radius:20px;
+}
+
+.btn-add {
+  display:flex; align-items:center; gap:6px;
+  background:var(--primary); color:white;
+  border:none; border-radius:8px;
+  padding:8px 14px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px; font-weight:600;
+  cursor:pointer;
+  transition:background .15s;
+}
+.btn-add:hover { background:var(--primary-hover); transform:none; }
+
+/* EMPTY */
+.empty {
+  background:var(--white); border:1px dashed var(--border);
+  border-radius:16px; padding:48px 20px; text-align:center;
+}
+.empty-icon {
+  width:48px; height:48px; background:var(--bg); border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 14px; font-size:22px; color:var(--text-muted);
+}
+.empty-title { font-size:14px; font-weight:700; margin-bottom:4px; }
+.empty-sub   { font-size:13px; color:var(--text-sub); }
 
 /* GRID */
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:15px;
-margin-bottom:20px;
+.act-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+  gap:14px; margin-bottom:24px;
 }
 
-/* FORM */
+/* ACT CARD */
+.act-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:16px; padding:18px 20px;
+  transition: box-shadow .15s, border-color .15s;
+  animation: fadeUp .25s ease both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+.act-card:hover { box-shadow:var(--shadow); border-color:#d1d5db; }
 
-label{
-font-size:13px;
-font-weight:500;
-color:#64748b;
-margin-bottom:5px;
-display:block;
+.act-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+.act-meta { flex:1; }
+
+.badge {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:11px; font-weight:700;
+  padding:3px 8px; border-radius:6px; margin-bottom:6px;
+}
+.b-proses  { background:var(--primary-light); color:var(--primary); }
+.b-filling { background:var(--green-light);   color:var(--green); }
+.b-packing { background:var(--amber-light);   color:var(--amber); }
+
+.act-machine { font-size:15px; font-weight:700; line-height:1.3; }
+
+.act-btns { display:flex; gap:4px; flex-shrink:0; }
+.act-btn {
+  width:30px; height:30px;
+  border:1px solid var(--border); background:var(--bg);
+  border-radius:8px; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--text-muted); font-size:11px;
+  transition:all .15s;
+}
+.act-btn:hover { transform:none; }
+.act-btn.edit:hover { background:var(--amber-light); color:var(--amber); border-color:#fcd34d; }
+.act-btn.del:hover  { background:var(--red-light);   color:var(--red);   border-color:#fca5a5; }
+
+.divider { border:none; border-top:1px solid var(--border); margin:12px 0; }
+
+.fl { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; }
+.fv { font-size:13px; color:var(--text-sub); line-height:1.6; }
+
+.action-item { display:flex; align-items:flex-start; gap:7px; margin-bottom:3px; }
+.action-num {
+  min-width:18px; height:18px; background:var(--primary-light); color:var(--primary);
+  border-radius:4px; font-size:10px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; margin-top:1px;
 }
 
-input,select,textarea{
-width:100%;
-padding:12px 14px;
-border-radius:12px;
-border:1px solid #e2e8f0;
-font-size:14px;
-transition:0.2s;
+/* SUBMIT */
+.submit-bar {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:16px; padding:20px 24px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
 }
+.submit-title { font-size:14px; font-weight:700; margin-bottom:2px; }
+.submit-sub   { font-size:12px; color:var(--text-sub); }
 
-input:focus,
-select:focus,
-textarea:focus{
-outline:none;
-border-color:var(--primary);
-box-shadow:0 0 0 3px var(--primary-soft);
+.btn-submit-main {
+  display:flex; align-items:center; gap:8px;
+  background:var(--primary); color:white;
+  border:none; border-radius:10px; padding:12px 22px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px; font-weight:700; cursor:pointer;
+  transition:background .15s; white-space:nowrap; flex-shrink:0;
 }
+.btn-submit-main:hover { background:var(--primary-hover); transform:none; }
 
-/* BUTTON */
-
-button{
-border:none;
-cursor:pointer;
-border-radius:12px;
-padding:10px 15px;
-font-weight:500;
-transition:0.2s;
+/* FAB */
+.fab {
+  position:fixed; bottom:28px; right:28px;
+  width:52px; height:52px;
+  background:var(--primary); color:white; border:none;
+  border-radius:14px; font-size:20px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; box-shadow:0 6px 20px rgba(99,102,241,.35);
+  z-index:50; transition:all .15s;
 }
-
-button:hover{
-transform:translateY(-1px);
-}
-
-.btn-add{
-background:var(--primary);
-color:white;
-}
-
-.btn-submit{
-background:var(--primary);
-color:white;
-width:100%;
-margin-top:20px;
-padding:14px;
-font-size:15px;
-}
-
-.btn-back{
-background:#94a3b8;
-color:white;
-}
-
-.btn-copy{
-background:var(--success);
-color:white;
-}
-
-/* CARD LIST */
-
-.card-container{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-gap:18px;
-margin-top:20px;
-}
-
-.card-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:10px;
-}
-
-.badge{
-padding:6px 14px;
-border-radius:20px;
-font-size:12px;
-font-weight:600;
-display:inline-block;
-}
-
-.proses{background:#e0f2fe;color:#0284c7}
-.filling{background:#ecfdf5;color:#059669}
-.packing{background:#fef3c7;color:#d97706}
-
-/* NEW CARD CONTENT */
-
-.card-section{
-margin-top:10px;
-}
-
-.card-label{
-font-size:12px;
-font-weight:600;
-color:#64748b;
-margin-bottom:4px;
-}
-
-.card-text{
-font-size:14px;
-}
-
-.card-divider{
-border-top:1px solid #e2e8f0;
-margin:12px 0;
-}
-
-/* ICON BUTTON */
-
-.icon-btn{
-background:#f1f5f9;
-border:none;
-cursor:pointer;
-font-size:14px;
-margin-left:6px;
-padding:6px 8px;
-border-radius:8px;
-}
-
-.icon-edit{color:#f59e0b}
-.icon-delete{color:#ef4444}
-
-.icon-btn:hover{
-background:#e2e8f0;
-}
+.fab:hover { background:var(--primary-hover); box-shadow:0 8px 28px rgba(99,102,241,.45); transform:scale(1.04); }
 
 /* MODAL */
+.modal {
+  position:fixed; inset:0;
+  background:rgba(17,24,39,.5);
+  display:none; align-items:flex-end; justify-content:center;
+  z-index:200; padding:0;
+}
+@media(min-width:600px){ .modal{align-items:center;padding:20px;} }
+.modal.show { display:flex; animation:bgIn .2s ease; }
+@keyframes bgIn { from{opacity:0;} to{opacity:1;} }
 
-.modal{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:rgba(0,0,0,0.4);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:100;
+.modal-box {
+  background:var(--white); width:100%; max-width:560px;
+  border-radius:20px 20px 0 0;
+  padding:24px 20px 36px;
+  max-height:92vh; overflow-y:auto;
+  animation:sheetUp .28s cubic-bezier(.34,1.56,.64,1);
+  position:relative;
+}
+@media(min-width:600px){
+  .modal-box { border-radius:20px; padding:28px; animation:popIn .22s ease; }
+}
+@keyframes sheetUp { from{transform:translateY(100%);} to{transform:translateY(0);} }
+@keyframes popIn   { from{opacity:0;transform:scale(.97) translateY(8px);} to{opacity:1;transform:scale(1) translateY(0);} }
+.modal-box::-webkit-scrollbar { width:4px; }
+.modal-box::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+.sheet-handle { width:36px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 20px; display:block; }
+@media(min-width:600px){ .sheet-handle{display:none;} }
+
+.modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+.modal-title { font-size:17px; font-weight:800; }
+.modal-close {
+  width:30px; height:30px; background:var(--bg);
+  border:1px solid var(--border); border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--text-sub); font-size:12px; transition:all .15s;
+}
+.modal-close:hover { background:var(--border); color:var(--text); transform:none; }
+
+/* AREA TABS */
+.area-tabs {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:6px; margin-bottom:20px;
+  background:var(--bg); border:1px solid var(--border);
+  border-radius:12px; padding:4px;
+}
+.area-tab {
+  border:none; background:transparent; border-radius:9px;
+  padding:10px 6px; text-align:center; cursor:pointer;
+  transition:all .15s;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:12px; font-weight:600; color:var(--text-sub);
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+}
+.area-tab .icon { font-size:20px; }
+.area-tab:hover { background:var(--white); color:var(--text); }
+.area-tab.active { background:var(--white); box-shadow:var(--shadow-sm); color:var(--text); }
+.area-tab.active.proses  { color:var(--primary); }
+.area-tab.active.filling { color:var(--green); }
+.area-tab.active.packing { color:var(--amber); }
+
+.form-row { margin-bottom:16px; }
+
+/* BUTTONS */
+.btn-primary {
+  width:100%; background:var(--primary); color:white;
+  border:none; border-radius:10px; padding:13px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px; font-weight:700; cursor:pointer;
+  transition:background .15s; margin-top:8px;
+}
+.btn-primary:hover { background:var(--primary-hover); transform:none; }
+
+.btn-row { display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
+
+.btn-green {
+  display:flex; align-items:center; gap:6px;
+  background:var(--green-light); color:var(--green);
+  border:1px solid #a7f3d0; border-radius:8px;
+  padding:10px 16px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px; font-weight:600; cursor:pointer; transition:background .15s;
+}
+.btn-green:hover { background:#d1fae5; transform:none; }
+
+.btn-indigo {
+  flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+  background:var(--primary); color:white; border:none; border-radius:8px;
+  padding:10px 16px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px; font-weight:600; cursor:pointer; transition:background .15s;
+}
+.btn-indigo:hover { background:var(--primary-hover); transform:none; }
+
+.btn-ghost {
+  display:flex; align-items:center; gap:6px;
+  background:transparent; color:var(--text-sub);
+  border:1px solid var(--border); border-radius:8px;
+  padding:10px 16px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px; font-weight:600; cursor:pointer; transition:all .15s;
+}
+.btn-ghost:hover { background:var(--bg); color:var(--text); transform:none; }
+
+#hasil {
+  height:260px; font-family:'Courier New',monospace;
+  font-size:12.5px; line-height:1.8;
+  background:var(--bg); color:var(--text);
 }
 
-.modal.show{
-display:flex;
+.spinner {
+  width:14px; height:14px;
+  border:2px solid rgba(255,255,255,.4); border-top-color:white;
+  border-radius:50%; display:inline-block;
+  animation:spin .6s linear infinite; vertical-align:middle;
 }
-
-.modal-content{
-background:white;
-padding:28px;
-border-radius:20px;
-width:90%;
-max-width:650px;
-box-shadow:0 20px 60px rgba(0,0,0,0.15);
-position:relative;
-}
-
-/* CLOSE BUTTON */
-
-.modal-close{
-position:absolute;
-top:12px;
-right:12px;
-background:#f1f5f9;
-border:none;
-width:36px;
-height:36px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-font-size:16px;
-transition:0.2s;
-}
-
-.modal-close:hover{
-background:#e2e8f0;
-}
-
-/* FLOATING */
-
-.floating{
-position:fixed;
-bottom:30px;
-right:30px;
-background:var(--primary);
-color:white;
-width:60px;
-height:60px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:26px;
-box-shadow:0 10px 30px rgba(37,99,235,0.4);
-cursor:pointer;
-transition:0.25s;
-}
-
-.floating:hover{
-transform:scale(1.08);
-}
-
-/* AREA */
-
-.area-group{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:12px;
-margin-top:10px;
-}
-
-.area-btn{
-background:#f1f5f9;
-border:1px solid #e2e8f0;
-border-radius:14px;
-padding:12px;
-text-align:center;
-cursor:pointer;
-transition:0.2s;
-font-size:14px;
-font-weight:500;
-}
-
-.area-btn:hover{
-background:#e2e8f0;
-}
-
-.area-btn.active{
-background:var(--primary-soft);
-border-color:var(--primary);
-color:var(--primary);
-}
-
-.area-icon{
-display:block;
-font-size:26px;
-margin-bottom:5px;
-}
-
-/* LOADING */
-.loading{
-opacity:0.7;
-pointer-events:none;
-}
-
-.spinner{
-width:18px;
-height:18px;
-border:2px solid #fff;
-border-top:2px solid transparent;
-border-radius:50%;
-display:inline-block;
-animation:spin 0.6s linear infinite;
-margin-right:8px;
-vertical-align:middle;
-}
-
-@keyframes spin{
-to{transform:rotate(360deg);}
-}
-
+@keyframes spin { to{transform:rotate(360deg);} }
+.loading { opacity:.7; pointer-events:none; }
 </style>
-
 </head>
-
 <body>
 
-<div class="header">
-<h2>
-<i class="fa-solid fa-screwdriver-wrench"></i>
-Maintenance Dashboard
-</h2>
-<div>Aktivitas Teknisi</div>
+<header class="topbar">
+  <div class="topbar-brand">
+    <div class="brand-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+    Maintenance
+  </div>
+  <span class="topbar-tag">Teknisi</span>
+</header>
+
+<div class="page">
+
+  <div class="page-title">Dashboard</div>
+  <div class="page-sub">Catat dan kelola aktivitas maintenance shift kamu.</div>
+
+  <div class="card header-card">
+    <div class="header-card-label">Info Shift</div>
+    <div class="header-grid">
+      <div class="field">
+        <label class="field-label">Tanggal</label>
+        <input type="date" id="tanggal">
+      </div>
+      <div class="field">
+        <label class="field-label">Shift</label>
+        <select id="shift">
+          <option>Shift 1</option><option>Shift 2</option><option>Shift 3</option>
+          <option>Longshift 1</option><option>Longshift 2</option>
+          <option>S1</option><option>S2</option><option>S3</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">Teknisi</label>
+        <input type="text" id="teknisi" placeholder="Nama teknisi...">
+      </div>
+    </div>
+  </div>
+
+  <div class="section-bar">
+    <div class="section-bar-left">
+      <span class="section-title">Aktivitas</span>
+      <span class="pill" id="countPill">0</span>
+    </div>
+    <button class="btn-add" onclick="openForm()">
+      <i class="fa-solid fa-plus"></i> Tambah
+    </button>
+  </div>
+
+  <div id="emptyState" class="empty">
+    <div class="empty-icon"><i class="fa-regular fa-clipboard"></i></div>
+    <div class="empty-title">Belum ada aktivitas</div>
+    <div class="empty-sub">Tekan "Tambah" untuk mencatat aktivitas baru.</div>
+  </div>
+
+  <div id="activityTable" class="act-grid"></div>
+
+  <div class="submit-bar">
+    <div>
+      <div class="submit-title">Buat Laporan WhatsApp</div>
+      <div class="submit-sub" id="summaryText">0 aktivitas siap dilaporkan</div>
+    </div>
+    <button class="btn-submit-main" onclick="openPreview()">
+      <i class="fa-solid fa-paper-plane"></i> Submit Laporan
+    </button>
+  </div>
+
 </div>
 
-<div class="container">
+<button class="fab" onclick="openForm()"><i class="fa-solid fa-plus"></i></button>
 
-<div class="card">
-
-<div class="grid">
-
-<div>
-<label>Tanggal</label>
-<input type="date" id="tanggal">
-</div>
-
-<div>
-<label>Shift</label>
-<select id="shift">
-<option>Shift 1</option>
-<option>Shift 2</option>
-<option>Shift 3</option>
-<option>Longshift 1</option>
-<option>Longshift 2</option>
-<option>S1</option>
-<option>S2</option>
-<option>S3</option>
-</select>
-</div>
-
-<div>
-<label>Teknisi</label>
-<input type="text" id="teknisi">
-</div>
-
-</div>
-
-</div>
-
-<div id="activityTable" class="card-container"></div>
-
-<button class="btn-submit" onclick="openPreview()">Submit Laporan</button>
-
-</div>
-
-<div class="floating" onclick="openForm()">
-<i class="fa-solid fa-plus"></i>
-</div>
-
-<!-- FORM -->
+<!-- FORM MODAL -->
 <div id="formModal" class="modal">
-<div class="modal-content">
+  <div class="modal-box">
+    <div class="sheet-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title">Aktivitas Baru</div>
+      <button class="modal-close" onclick="closeForm()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
 
-<button class="modal-close" onclick="closeForm()">
-<i class="fa-solid fa-xmark"></i>
-</button>
+    <div class="form-row">
+      <div class="field-label" style="margin-bottom:8px">Area</div>
+      <div class="area-tabs">
+        <button class="area-tab active proses" onclick="selectArea('Proses',this,'proses')">
+          <span class="icon">🔥</span>Proses
+        </button>
+        <button class="area-tab" onclick="selectArea('Filling',this,'filling')">
+          <span class="icon">💧</span>Filling
+        </button>
+        <button class="area-tab" onclick="selectArea('Packing',this,'packing')">
+          <span class="icon">📦</span>Packing
+        </button>
+      </div>
+    </div>
 
-<h3>Aktivitas Baru</h3>
+    <div class="form-row">
+      <div class="field-label" style="margin-bottom:6px">Mesin</div>
+      <select id="mesin"></select>
+    </div>
 
-<br>
+    <div class="form-row">
+      <div class="field-label" style="margin-bottom:6px">Downtime</div>
+      <textarea id="downtime" placeholder="Deskripsi downtime..."></textarea>
+    </div>
 
-<label>Area</label>
+    <div class="form-row">
+      <div class="field-label" style="margin-bottom:6px">Action</div>
+      <textarea id="action" placeholder="Tulis tindakan, satu baris per langkah..."></textarea>
+    </div>
 
-<div class="area-group">
-  <div class="area-btn active" onclick="selectArea('Proses', this)">
-    <span class="material-symbols-outlined area-icon">local_fire_department</span>
-    Proses
-  </div>
-
-  <div class="area-btn" onclick="selectArea('Filling', this)">
-    <span class="material-symbols-outlined area-icon">water_drop</span>
-    Filling
-  </div>
-
-  <div class="area-btn" onclick="selectArea('Packing', this)">
-    <span class="material-symbols-outlined area-icon">inventory_2</span>
-    Packing
+    <button class="btn-primary" onclick="saveActivity()">
+      <i class="fa-solid fa-check" style="margin-right:6px"></i>Simpan Aktivitas
+    </button>
   </div>
 </div>
 
-<br><br>
-
-<label>Mesin</label>
-<select id="mesin"></select>
-
-<br><br>
-
-<label>Downtime</label>
-<textarea id="downtime"></textarea>
-
-<br><br>
-
-<label>Action</label>
-<textarea id="action"></textarea>
-
-<br><br>
-
-<button class="btn-submit" onclick="saveActivity()">Simpan</button>
-
-</div>
-</div>
-
-<!-- PREVIEW -->
+<!-- PREVIEW MODAL -->
 <div id="previewModal" class="modal">
-<div class="modal-content">
-
-<h3>Laporan WhatsApp</h3>
-
-<br>
-
-<textarea id="hasil" style="height:300px"></textarea>
-
-<br><br>
-
-<button class="btn-copy" onclick="copyText()">Copy</button>
-<button id="btnPublish" class="btn-add" onclick="publish()">Publish</button>
-<button class="btn-back" onclick="closePreview()">Tutup</button>
-
-</div>
+  <div class="modal-box">
+    <div class="sheet-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title">Preview Laporan</div>
+      <button class="modal-close" onclick="closePreview()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="field-label" style="margin-bottom:6px">Teks WhatsApp</div>
+    <textarea id="hasil" readonly></textarea>
+    <div class="btn-row">
+      <button class="btn-green" onclick="copyText()"><i class="fa-solid fa-copy"></i> Copy</button>
+      <button id="btnPublish" class="btn-indigo" onclick="publish()"><i class="fa-solid fa-upload"></i> Publish</button>
+      <button class="btn-ghost" onclick="closePreview()">Tutup</button>
+    </div>
+  </div>
 </div>
 
 <script>
-
-const scriptURL="https://script.google.com/macros/s/AKfycbxvvEwX-6UPRxU0sd5_U1pyvVVVKyVgz2x-qPvii92ZXNiEiyy_PczSqNAqWaaAIGfD/exec"
-
-let activities=[]
-let editIndex=null
-let selectedArea = "Proses"
-
-const formModal=document.getElementById("formModal")
-const previewModal=document.getElementById("previewModal")
-const activityTable=document.getElementById("activityTable")
-
-/* =========================
-   HEADER LOCAL STORAGE
-========================= */
+const scriptURL="https://script.google.com/macros/s/AKfycbxvvEwX-6UPRxU0sd5_U1pyvVVVKyVgz2x-qPvii92ZXNiEiyy_PczSqNAqWaaAIGfD/exec";
+let activities=[],editIndex=null,selectedArea="Proses",selectedCls="proses";
 
 function saveHeader(){
-  const headerData = {
-    tanggal: document.getElementById("tanggal").value,
-    shift: document.getElementById("shift").value,
-    teknisi: document.getElementById("teknisi").value
-  }
-  localStorage.setItem("headerData", JSON.stringify(headerData))
+  localStorage.setItem("headerData",JSON.stringify({
+    tanggal:document.getElementById("tanggal").value,
+    shift:document.getElementById("shift").value,
+    teknisi:document.getElementById("teknisi").value
+  }));
 }
-
 function loadHeader(){
-  const data = localStorage.getItem("headerData")
-  if(data){
-    const h = JSON.parse(data)
-    document.getElementById("tanggal").value = h.tanggal || ""
-    document.getElementById("shift").value = h.shift || "Shift 1"
-    document.getElementById("teknisi").value = h.teknisi || ""
-  }
+  const d=localStorage.getItem("headerData");
+  if(!d)return;
+  const h=JSON.parse(d);
+  document.getElementById("tanggal").value=h.tanggal||"";
+  document.getElementById("shift").value=h.shift||"Shift 1";
+  document.getElementById("teknisi").value=h.teknisi||"";
 }
+document.getElementById("tanggal").addEventListener("change",saveHeader);
+document.getElementById("shift").addEventListener("change",saveHeader);
+document.getElementById("teknisi").addEventListener("input",saveHeader);
 
-/* =========================
-   EVENT LISTENER HEADER
-========================= */
-
-document.getElementById("tanggal").addEventListener("change", saveHeader)
-document.getElementById("shift").addEventListener("change", saveHeader)
-document.getElementById("teknisi").addEventListener("input", saveHeader)
-
-/* =========================
-   MODAL
-========================= */
-
-function openForm(){
-  formModal.classList.add("show")
-  updateMesin()
-}
-
+function openForm(){document.getElementById("formModal").classList.add("show");updateMesin();}
 function closeForm(){
-  formModal.classList.remove("show");
-  clearForm(); 
-  selectedArea = "Proses"
-
-  document.querySelectorAll(".area-btn")
-    .forEach(btn=>btn.classList.remove("active"))
-
-  document.querySelector(".area-btn").classList.add("active")
-
-  updateMesin()
+  document.getElementById("formModal").classList.remove("show");
+  clearForm();editIndex=null;selectedArea="Proses";selectedCls="proses";
+  const tabs=document.querySelectorAll(".area-tab");
+  tabs.forEach(t=>t.classList.remove("active","proses","filling","packing"));
+  tabs[0].classList.add("active","proses");
+  updateMesin();
 }
+function openPreview(){generateReport();document.getElementById("previewModal").classList.add("show");}
+function closePreview(){document.getElementById("previewModal").classList.remove("show");}
 
-function openPreview(){
-  generateReport()
-  previewModal.classList.add("show")
-}
-
-function closePreview(){
-  previewModal.classList.remove("show")
-}
-
-/* =========================
-   AREA
-========================= */
-
-function selectArea(area, el){
-  selectedArea = area
-
-  document.querySelectorAll(".area-btn")
-    .forEach(btn => btn.classList.remove("active"))
-
-  el.classList.add("active")
-
-  updateMesin()
+function selectArea(area,el,cls){
+  selectedArea=area;selectedCls=cls;
+  document.querySelectorAll(".area-tab").forEach(t=>t.classList.remove("active","proses","filling","packing"));
+  el.classList.add("active",cls);
+  updateMesin();
 }
 
 function updateMesin(){
-  const area = selectedArea
-  const mesin = document.getElementById("mesin")
-
-  let list = []
-
-  if(area === "Proses"){
-    list = ["Dumping Area", "Powder Tank","Sugar Tank","High Shear Mixer", "Choco Slurry 1", "Choco Slurry 2", "Reception Tank 1", "Reception Tank 2", "Pasteurizer", "Homogenizer GEA", "Pasteurize Tank 1", "Pasteurize Tank 2", "Mixing Tank 1", "Mixing Tank 2", "Storage Tank 1", "Storage Tank 2", "Storage Tank 3", "Storage Tank 4", "Sterilizer", "Homogenizer Tetra", "Aseptic Flex Dosing", "Aseptic Tank 1", "Aseptic Tank 2", "CIP Aseptic", "CIP Non-Aseptic Line 1", "CIP Non-Aseptic Line 2", "CIP Non-Aseptic Line 3", "Linemaker 1&2", "Linemaker 3"]
-  }
-  else if(area === "Filling"){
-    list = ["Combibloc 1", "Combibloc 2", "Combibloc 3", "Tetra A3 Flex", "Domino for C1", "Domino for C2", "Domino for C3", "Domino for Tetra"]
-  }
-  else if(area === "Packing"){
-    list = ["Tetra Cap 30 Flex", "Carton Sealer", "Conveyor System 1", "Conveyor System 2", "Conveyor System 3", "Conveyor Buffer 1", "Conveyor Buffer 2", "Conveyor Buffer 3", "Straw Applicator 1", "Straw Applicator 2", "Straw Applicator 3", "Traypacker 1", "Traypacker 2", "Traypacker 3", "Videojet for TP1", "Videojet for TP2", "Videojet for TP3", "Videojet for Cap 30"]
-  }
-
-  mesin.innerHTML = ""
-
-  list.forEach(item=>{
-    const option = document.createElement("option")
-    option.value = item
-    option.textContent = item
-    mesin.appendChild(option)
-  })
+  const lists={
+    Proses:["Dumping Area","Powder Tank","Sugar Tank","High Shear Mixer","Choco Slurry 1","Choco Slurry 2","Reception Tank 1","Reception Tank 2","Pasteurizer","Homogenizer GEA","Pasteurize Tank 1","Pasteurize Tank 2","Mixing Tank 1","Mixing Tank 2","Storage Tank 1","Storage Tank 2","Storage Tank 3","Storage Tank 4","Sterilizer","Homogenizer Tetra","Aseptic Flex Dosing","Aseptic Tank 1","Aseptic Tank 2","CIP Aseptic","CIP Non-Aseptic Line 1","CIP Non-Aseptic Line 2","CIP Non-Aseptic Line 3","Linemaker 1&2","Linemaker 3"],
+    Filling:["Combibloc 1","Combibloc 2","Combibloc 3","Tetra A3 Flex","Domino for C1","Domino for C2","Domino for C3","Domino for Tetra"],
+    Packing:["Tetra Cap 30 Flex","Carton Sealer","Conveyor System 1","Conveyor System 2","Conveyor System 3","Conveyor Buffer 1","Conveyor Buffer 2","Conveyor Buffer 3","Straw Applicator 1","Straw Applicator 2","Straw Applicator 3","Traypacker 1","Traypacker 2","Traypacker 3","Videojet for TP1","Videojet for TP2","Videojet for TP3","Videojet for Cap 30"]
+  };
+  document.getElementById("mesin").innerHTML=(lists[selectedArea]||[]).map(x=>`<option>${x}</option>`).join("");
 }
 
-/* =========================
-   ACTIVITY
-========================= */
-
 function saveActivity(){
-  const data={
-    area:selectedArea,
-    mesin:mesin.value,
-    downtime:downtime.value,
-    action:action.value
-  }
-
-  if(editIndex==null){
-    activities.push(data)
-  }else{
-    activities[editIndex]=data
-    editIndex=null
-  }
-
-  saveToLocal()
-  renderTable()
-  closeForm()
+  const data={area:selectedArea,areaCls:selectedCls,mesin:document.getElementById("mesin").value,downtime:document.getElementById("downtime").value,action:document.getElementById("action").value};
+  if(editIndex===null)activities.push(data);
+  else{activities[editIndex]=data;editIndex=null;}
+  saveToLocal();renderTable();closeForm();
 }
 
 function renderTable(){
-  activityTable.innerHTML=""
-
+  const table=document.getElementById("activityTable");
+  const empty=document.getElementById("emptyState");
+  const n=activities.length;
+  document.getElementById("countPill").textContent=n;
+  document.getElementById("summaryText").textContent=`${n} aktivitas siap dilaporkan`;
+  if(n===0){empty.style.display="block";table.innerHTML="";return;}
+  empty.style.display="none";table.innerHTML="";
   activities.forEach((a,i)=>{
-    let badgeClass=""
-    if(a.area=="Proses") badgeClass="proses"
-    if(a.area=="Filling") badgeClass="filling"
-    if(a.area=="Packing") badgeClass="packing"
-
-    const actionNumbered = a.action
-      .split("\n")
-      .filter(line => line.trim() !== "")
-      .map((line,i)=>`${i+1}. ${line}`)
-      .join("<br>")
-
-    activityTable.innerHTML+=`
-    <div class="card">
-
-      <div class="card-header">
-        <div class="badge ${badgeClass}">
-          ${a.area} •> ${a.mesin}
+    const lines=a.action.split("\n").filter(l=>l.trim());
+    const actHTML=lines.map((l,j)=>`<div class="action-item"><span class="action-num">${j+1}</span><span>${l}</span></div>`).join("");
+    const cls=a.areaCls||a.area.toLowerCase();
+    const card=document.createElement("div");
+    card.className="act-card";
+    card.style.animationDelay=`${i*.05}s`;
+    card.innerHTML=`
+      <div class="act-top">
+        <div class="act-meta">
+          <div class="badge b-${cls}">${a.area}</div>
+          <div class="act-machine">${a.mesin}</div>
         </div>
-
-        <div>
-          <button class="icon-btn icon-edit" onclick="edit(${i})">
-            <i class="fa-solid fa-pen"></i>
-          </button>
-          <button class="icon-btn icon-delete" onclick="hapus(${i})">
-            <i class="fa-solid fa-trash"></i>
-          </button>
+        <div class="act-btns">
+          <button class="act-btn edit" onclick="editAct(${i})"><i class="fa-solid fa-pen"></i></button>
+          <button class="act-btn del"  onclick="hapus(${i})"><i class="fa-solid fa-trash"></i></button>
         </div>
       </div>
-
-      <div class="card-section">
-        <div class="card-label">Downtime</div>
-        <div class="card-text">${a.downtime}</div>
-      </div>
-
-      <div class="card-divider"></div>
-
-      <div class="card-section">
-        <div class="card-label">Action</div>
-        <div class="card-text">${actionNumbered}</div>
-      </div>
-
-    </div>`
-  })
+      <hr class="divider">
+      <div class="fl">Downtime</div>
+      <div class="fv" style="margin-bottom:10px">${a.downtime||'—'}</div>
+      <div class="fl">Action</div>
+      <div class="fv">${actHTML||'—'}</div>
+    `;
+    table.appendChild(card);
+  });
 }
 
-function edit(i){
-  const data = activities[i]
-  editIndex = i
-
-  selectedArea = data.area
-
-  document.querySelectorAll(".area-btn")
-    .forEach(btn=>{
-      btn.classList.remove("active")
-      if(btn.innerText.includes(selectedArea)){
-        btn.classList.add("active")
-      }
-    })
-
-  updateMesin()
-
-  document.getElementById("mesin").value = data.mesin
-  document.getElementById("downtime").value = data.downtime
-  document.getElementById("action").value = data.action
-
-  formModal.classList.add("show")
+function editAct(i){
+  const a=activities[i];editIndex=i;
+  selectedArea=a.area;selectedCls=a.areaCls||a.area.toLowerCase();
+  const map={Proses:0,Filling:1,Packing:2};
+  const clsMap={Proses:"proses",Filling:"filling",Packing:"packing"};
+  const tabs=document.querySelectorAll(".area-tab");
+  tabs.forEach(t=>t.classList.remove("active","proses","filling","packing"));
+  tabs[map[a.area]].classList.add("active",clsMap[a.area]);
+  updateMesin();
+  document.getElementById("mesin").value=a.mesin;
+  document.getElementById("downtime").value=a.downtime;
+  document.getElementById("action").value=a.action;
+  document.getElementById("formModal").classList.add("show");
 }
 
-function hapus(i){
-  activities.splice(i,1)
-  saveToLocal()
-  renderTable()
-}
-
-/* =========================
-   REPORT
-========================= */
+function hapus(i){activities.splice(i,1);saveToLocal();renderTable();}
 
 function generateReport(){
-  const tanggal=document.getElementById("tanggal").value
-  const date=new Date(tanggal)
-
-  const hari=date.toLocaleDateString('id-ID',{weekday:'long'})
-  const tgl = date.toLocaleDateString('id-ID',{
-    day:'2-digit',
-    month:'long',
-    year:'numeric'
-  })
-
-  const shift=document.getElementById("shift").value
-
-  let text=`${hari}, ${tgl}, ${shift}\n`
-
-  const grouped={}
-
+  const tanggal=document.getElementById("tanggal").value;
+  const date=new Date(tanggal);
+  const hari=date.toLocaleDateString('id-ID',{weekday:'long'});
+  const tgl=date.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+  const shift=document.getElementById("shift").value;
+  let text=`${hari}, ${tgl}, ${shift}\n`;
+  const grouped={};
   activities.forEach(a=>{
-    if(!grouped[a.area]) grouped[a.area]={}
-    if(!grouped[a.area][a.mesin]) grouped[a.area][a.mesin]=[]
-    grouped[a.area][a.mesin].push(a)
-  })
-
+    if(!grouped[a.area])grouped[a.area]={};
+    if(!grouped[a.area][a.mesin])grouped[a.area][a.mesin]=[];
+    grouped[a.area][a.mesin].push(a);
+  });
   for(let area in grouped){
-    text+=`\n*${area}*\n`
+    text+=`\n*${area}*\n`;
     for(let mesin in grouped[area]){
-      text+=`*• ${mesin}*\n`
+      text+=`*• ${mesin}*\n`;
       grouped[area][mesin].forEach(d=>{
-        text+=`> ${d.downtime}\n`
-        d.action.split("\n").forEach(a=>{
-          text+=`- ${a}\n`
-        })
-      })
+        text+=`> ${d.downtime}\n`;
+        d.action.split("\n").forEach(l=>{if(l.trim())text+=`- ${l}\n`;});
+      });
     }
   }
-
-  hasil.value=text
+  document.getElementById("hasil").value=text;
 }
 
-function copyText(){
-  hasil.select()
-  document.execCommand("copy")
-  alert("Copied")
-}
-
-/* =========================
-   PUBLISH
-========================= */
+function copyText(){const el=document.getElementById("hasil");el.select();document.execCommand("copy");alert("Copied!");}
 
 async function publish(){
-
-  const btn = document.getElementById("btnPublish")
-
-  // 🔥 aktifkan loading
-  btn.classList.add("loading")
-  btn.innerHTML = `<span class="spinner"></span>Publishing...`
-  btn.disabled = true
-
-  const tanggal=document.getElementById("tanggal").value
-  const shift=document.getElementById("shift").value
-  const teknisi=document.getElementById("teknisi").value
-
-  const data=activities.map(a=>({
-    tanggal,shift,teknisi,
-    area:a.area,
-    mesin:a.mesin,
-    downtime:a.downtime,
-    action:a.action
-  }))
-
+  const btn=document.getElementById("btnPublish");
+  btn.classList.add("loading");btn.innerHTML=`<span class="spinner"></span> Publishing...`;btn.disabled=true;
+  const tanggal=document.getElementById("tanggal").value;
+  const shift=document.getElementById("shift").value;
+  const teknisi=document.getElementById("teknisi").value;
+  const data=activities.map(a=>({tanggal,shift,teknisi,area:a.area,mesin:a.mesin,downtime:a.downtime,action:a.action}));
   try{
-    await fetch(scriptURL,{
-      method:"POST",
-      body:JSON.stringify(data)
-    })
-
-    resetData()
-    closePreview()
-    alert("Berhasil Publish")
-
-  }catch{
-    alert("Gagal Publish")
-  }
-
-  // 🔄 kembalikan tombol normal
-  btn.classList.remove("loading")
-  btn.innerHTML = "Publish"
-  btn.disabled = false
-}
-/* =========================
-   STORAGE
-========================= */
-
-function resetData(){
-  activities=[]
-  localStorage.removeItem("activities")
-  renderTable()
+    await fetch(scriptURL,{method:"POST",body:JSON.stringify(data)});
+    resetData();closePreview();alert("Berhasil Publish!");
+  }catch{alert("Gagal Publish.");}
+  btn.classList.remove("loading");btn.innerHTML=`<i class="fa-solid fa-upload"></i> Publish`;btn.disabled=false;
 }
 
-function saveToLocal(){
-  localStorage.setItem("activities", JSON.stringify(activities))
-  saveHeader() // 🔥 penting: ikut simpan header
-}
-
-function loadFromLocal(){
-  const data=localStorage.getItem("activities")
-  if(data){
-    activities=JSON.parse(data)
-    renderTable()
-  }
-}
-
-function clearForm(){
-  mesin.value=""
-  downtime.value=""
-  action.value=""
-}
-
+function resetData(){activities=[];localStorage.removeItem("activities");renderTable();}
+function saveToLocal(){localStorage.setItem("activities",JSON.stringify(activities));saveHeader();}
+function loadFromLocal(){const d=localStorage.getItem("activities");if(d){activities=JSON.parse(d);renderTable();}}
+function clearForm(){document.getElementById("downtime").value="";document.getElementById("action").value="";}
 function setTodayIfEmpty(){
-  const tanggalInput = document.getElementById("tanggal")
-
-  // Kalau belum ada value (belum pernah disimpan / kosong)
-  if(!tanggalInput.value){
-    const today = new Date()
-    const yyyy = today.getFullYear()
-    const mm = String(today.getMonth()+1).padStart(2,'0')
-    const dd = String(today.getDate()).padStart(2,'0')
-
-    tanggalInput.value = `${yyyy}-${mm}-${dd}`
-  }
+  const el=document.getElementById("tanggal");
+  if(!el.value){const d=new Date();el.value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 }
 
-/* =========================
-   INIT
-========================= */
-
-loadHeader()
-setTodayIfEmpty()
-loadFromLocal()
-
+loadHeader();setTodayIfEmpty();loadFromLocal();updateMesin();
+if(activities.length===0)document.getElementById("emptyState").style.display="block";
 </script>
-
 </body>
 </html>
