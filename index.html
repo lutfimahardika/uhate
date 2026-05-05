@@ -6,6 +6,7 @@
 <title>Maintenance Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -102,7 +103,7 @@ body {
 }
 
 /* HEADER CARD */
-.header-card { padding: 20px 24px; margin-bottom: 24px; }
+.header-card { padding: 20px 24px; margin-bottom: 20px; }
 .header-card-label {
   font-size: 11px; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.7px; color: var(--text-muted); margin-bottom: 16px;
@@ -139,7 +140,7 @@ textarea { resize:vertical; min-height:80px; }
 .section-bar {
   display:flex; align-items:center;
   justify-content:space-between;
-  margin-bottom:14px;
+  margin-bottom:20px;
 }
 .section-bar-left { display:flex; align-items:center; gap:8px; }
 .section-title { font-size:15px; font-weight:700; }
@@ -165,6 +166,7 @@ textarea { resize:vertical; min-height:80px; }
 .empty {
   background:var(--white); border:1px dashed var(--border);
   border-radius:16px; padding:48px 20px; text-align:center;
+  margin-bottom:20px;
 }
 .empty-icon {
   width:48px; height:48px; background:var(--bg); border-radius:12px;
@@ -178,7 +180,7 @@ textarea { resize:vertical; min-height:80px; }
 .act-grid {
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
-  gap:14px; margin-bottom:24px;
+  gap:14px; margin-bottom:20px;
 }
 
 /* ACT CARD */
@@ -190,6 +192,26 @@ textarea { resize:vertical; min-height:80px; }
 }
 @keyframes fadeUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
 .act-card:hover { box-shadow:var(--shadow); border-color:#d1d5db; }
+
+/* DRAG */
+.act-card { cursor: default; }
+.act-card.sortable-ghost { opacity: 0.35; border: 2px dashed var(--primary); background: var(--primary-light); }
+.act-card.sortable-chosen { box-shadow: 0 8px 32px rgba(99,102,241,0.18); border-color: #a5b4fc; }
+.drag-handle {
+  width: 32px; height: 32px;
+  border: 1px solid var(--border); background: var(--bg);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  cursor: grab; color: var(--text-muted); font-size: 12px;
+  transition: all .15s; flex-shrink: 0;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.drag-handle:active { cursor: grabbing; background: var(--primary-light); color: var(--primary); }
+.drag-handle:hover { background: var(--primary-light); color: var(--primary); border-color: #a5b4fc; }
+.act-card.sortable-drag { opacity: 1 !important; box-shadow: 0 16px 48px rgba(99,102,241,0.22); transform: scale(1.02); border-color: #a5b4fc; }
+body.is-dragging { overflow: hidden; }
+
 
 .act-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
 .act-meta { flex:1; }
@@ -230,6 +252,7 @@ textarea { resize:vertical; min-height:80px; }
 }
 
 /* SUBMIT */
+.checklist-card { margin-bottom: 20px; }
 .submit-bar {
   background:var(--white); border:1px solid var(--border);
   border-radius:16px; padding:20px 24px;
@@ -239,7 +262,7 @@ textarea { resize:vertical; min-height:80px; }
 .submit-sub   { font-size:12px; color:var(--text-sub); }
 
 .btn-submit-main {
-  display:flex; align-items:center; gap:8px;
+  display:flex; align-items:center; justify-content:center; gap:8px;
   background:var(--primary); color:white;
   border:none; border-radius:10px; padding:12px 22px;
   font-family:'Plus Jakarta Sans',sans-serif;
@@ -247,6 +270,11 @@ textarea { resize:vertical; min-height:80px; }
   transition:background .15s; white-space:nowrap; flex-shrink:0;
 }
 .btn-submit-main:hover { background:var(--primary-hover); transform:none; }
+
+@media(max-width:480px){
+  .submit-bar { flex-direction:column; align-items:stretch; gap:14px; padding:18px; }
+  .btn-submit-main { width:100%; }
+}
 
 /* FAB */
 .fab {
@@ -379,6 +407,194 @@ textarea { resize:vertical; min-height:80px; }
 }
 @keyframes spin { to{transform:rotate(360deg);} }
 .loading { opacity:.7; pointer-events:none; }
+
+/* SEARCHABLE MESIN DROPDOWN */
+.mesin-wrapper {
+  position: relative;
+}
+.mesin-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.mesin-wrapper.open .mesin-input-row {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+  border-radius: 10px 10px 0 0;
+}
+.mesin-search-icon { color: var(--text-muted); font-size: 12px; flex-shrink: 0; }
+.mesin-search {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0;
+  outline: none;
+  box-shadow: none;
+  font-size: 14px;
+  color: var(--text);
+  width: 100%;
+  cursor: text;
+}
+.mesin-search::placeholder { color: var(--text-muted); }
+.mesin-chevron {
+  color: var(--text-muted); font-size: 11px; flex-shrink: 0;
+  transition: transform .2s;
+}
+.mesin-wrapper.open .mesin-chevron { transform: rotate(180deg); }
+
+.mesin-dropdown {
+  display: none;
+  position: absolute;
+  left: 0; right: 0;
+  background: var(--white);
+  border: 1px solid var(--primary);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  z-index: 300;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.mesin-wrapper.open .mesin-dropdown { display: block; }
+.mesin-dropdown::-webkit-scrollbar { width: 4px; }
+.mesin-dropdown::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.mesin-option {
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background .1s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mesin-option:hover { background: var(--primary-light); }
+.mesin-option.selected { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.mesin-option.selected::after { content: '✓'; margin-left: auto; font-size: 12px; }
+.mesin-option mark {
+  background: #fef9c3;
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+  font-style: normal;
+}
+.mesin-no-result {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* TEKNISI DROPDOWN */
+.tek-wrapper { position: relative; }
+.tek-input-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 10px; padding: 8px 14px; cursor: pointer;
+  min-height: 42px; transition: border-color .15s, box-shadow .15s;
+}
+.tek-wrapper.open .tek-input-row {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+  border-radius: 10px 10px 0 0;
+}
+.tek-selected { flex:1; display:flex; flex-wrap:wrap; gap:5px; align-items:center; }
+.tek-placeholder { font-size:14px; color:var(--text-muted); }
+.tek-chip {
+  display:inline-flex; align-items:center; gap:4px;
+  background:var(--primary-light); color:var(--primary);
+  border:1px solid rgba(99,102,241,.2); border-radius:6px;
+  padding:2px 8px; font-size:12px; font-weight:600;
+}
+.tek-chip-remove { cursor:pointer; font-size:10px; color:var(--primary); opacity:.7; line-height:1; }
+.tek-chip-remove:hover { opacity:1; }
+.tek-chevron { color:var(--text-muted); font-size:11px; flex-shrink:0; transition:transform .2s; }
+.tek-wrapper.open .tek-chevron { transform:rotate(180deg); }
+.tek-dropdown {
+  display:none; position:absolute; left:0; right:0;
+  background:var(--white); border:1px solid var(--primary);
+  border-top:none; border-radius:0 0 10px 10px;
+  box-shadow:0 8px 24px rgba(0,0,0,.1); z-index:300; overflow:hidden;
+}
+.tek-wrapper.open .tek-dropdown { display:block; }
+.tek-option {
+  display:flex; align-items:center; gap:10px;
+  padding:11px 14px; font-size:14px; color:var(--text);
+  cursor:pointer; transition:background .1s;
+}
+.tek-option:hover { background:var(--primary-light); }
+.tek-check {
+  width:18px; height:18px; border:1.5px solid var(--border);
+  border-radius:5px; display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:all .15s; font-size:10px; color:transparent;
+}
+.tek-option.checked .tek-check { background:var(--primary); border-color:var(--primary); color:white; }
+.tek-option.checked { font-weight:600; }
+
+/* CHECKLIST CARD */
+.checklist-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+.checklist-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; cursor: pointer;
+  transition: background .15s;
+  user-select: none;
+}
+.checklist-header:hover { background: var(--bg); }
+.checklist-header-left { display: flex; align-items: center; gap: 12px; }
+.checklist-icon {
+  width: 34px; height: 34px;
+  background: var(--primary-light); color: var(--primary);
+  border-radius: 9px; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.checklist-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 1px; }
+.checklist-sub   { font-size: 12px; color: var(--text-sub); }
+.checklist-chevron { color: var(--text-muted); font-size: 12px; transition: transform .25s; flex-shrink: 0; }
+.checklist-card.open .checklist-chevron { transform: rotate(180deg); }
+
+.checklist-body { display: none; }
+.checklist-card.open .checklist-body { display: block; }
+
+.checklist-divider { border-top: 1px solid var(--border); }
+
+.checklist-list { padding: 8px 12px 12px; }
+
+.checklist-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 10px; border-radius: 10px;
+  cursor: pointer; transition: background .12s;
+  user-select: none;
+}
+.checklist-item:hover { background: var(--bg); }
+
+.checklist-box {
+  width: 20px; height: 20px; flex-shrink: 0;
+  border: 1.5px solid var(--border); border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s; font-size: 11px; color: transparent;
+}
+.checklist-item.checked .checklist-box {
+  background: var(--primary); border-color: var(--primary); color: white;
+}
+.checklist-item-label {
+  font-size: 14px; color: var(--text-sub); transition: color .15s; flex: 1;
+}
+.checklist-item.checked .checklist-item-label {
+  color: var(--text); font-weight: 600;
+}
 </style>
 </head>
 <body>
@@ -413,7 +629,18 @@ textarea { resize:vertical; min-height:80px; }
       </div>
       <div class="field">
         <label class="field-label">Teknisi</label>
-        <input type="text" id="teknisi" placeholder="Nama teknisi...">
+        <div class="tek-wrapper" id="tekWrapper">
+          <div class="tek-input-row" onclick="toggleTekDropdown()">
+            <div class="tek-selected" id="tekSelected">
+              <span class="tek-placeholder" id="tekPlaceholder">Pilih teknisi...</span>
+            </div>
+            <i class="fa-solid fa-chevron-down tek-chevron" id="tekChevron"></i>
+          </div>
+          <div class="tek-dropdown" id="tekDropdown">
+            <div id="tekList"></div>
+          </div>
+        </div>
+        <input type="hidden" id="teknisi">
       </div>
     </div>
   </div>
@@ -435,6 +662,24 @@ textarea { resize:vertical; min-height:80px; }
   </div>
 
   <div id="activityTable" class="act-grid"></div>
+
+  <!-- CHECKLIST CARD -->
+  <div class="checklist-card">
+    <div class="checklist-header" onclick="toggleChecklist()">
+      <div class="checklist-header-left">
+        <div class="checklist-icon"><i class="fa-solid fa-list-check"></i></div>
+        <div>
+          <div class="checklist-title">Kegiatan Tambahan</div>
+          <div class="checklist-sub" id="checklistSub">0 dari 4 dicentang</div>
+        </div>
+      </div>
+      <i class="fa-solid fa-chevron-down checklist-chevron" id="checklistChevron"></i>
+    </div>
+    <div class="checklist-body" id="checklistBody">
+      <div class="checklist-divider"></div>
+      <div class="checklist-list" id="checklistList"></div>
+    </div>
+  </div>
 
   <div class="submit-bar">
     <div>
@@ -476,7 +721,17 @@ textarea { resize:vertical; min-height:80px; }
 
     <div class="form-row">
       <div class="field-label" style="margin-bottom:6px">Mesin</div>
-      <select id="mesin"></select>
+      <div class="mesin-wrapper" id="mesinWrapper">
+        <div class="mesin-input-row" onclick="toggleMesinDropdown()">
+          <i class="fa-solid fa-magnifying-glass mesin-search-icon"></i>
+          <input type="text" id="mesinSearch" class="mesin-search" placeholder="Cari mesin..." autocomplete="off" oninput="filterMesin()" onclick="event.stopPropagation(); openMesinDropdown()">
+          <i class="fa-solid fa-chevron-down mesin-chevron" id="mesinChevron"></i>
+        </div>
+        <div class="mesin-dropdown" id="mesinDropdown">
+          <div id="mesinList"></div>
+        </div>
+      </div>
+      <input type="hidden" id="mesin">
     </div>
 
     <div class="form-row">
@@ -516,6 +771,39 @@ textarea { resize:vertical; min-height:80px; }
 <script>
 const scriptURL="https://script.google.com/macros/s/AKfycbxvvEwX-6UPRxU0sd5_U1pyvVVVKyVgz2x-qPvii92ZXNiEiyy_PczSqNAqWaaAIGfD/exec";
 let activities=[],editIndex=null,selectedArea="Proses",selectedCls="proses";
+const checklistItems=['Support produksi','Prepare nitrogen','Monitoring nitrogen','Shut off nitrogen'];
+let checkedItems=[];
+
+function renderChecklistList(){
+  const list=document.getElementById('checklistList');
+  if(!list) return;
+  list.innerHTML=checklistItems.map((label,i)=>{
+    const ok=checkedItems.includes(i);
+    return '<div class="checklist-item'+(ok?' checked':'')+'" onclick="toggleCheckItem('+i+')"><div class="checklist-box">'+(ok?'<i class="fa-solid fa-check"></i>':'')+'</div><div class="checklist-item-label">'+label+'</div></div>';
+  }).join('');
+  const n=checkedItems.length;
+  const sub=document.getElementById('checklistSub');
+  if(sub) sub.textContent=n+' dari '+checklistItems.length+' dicentang';
+  localStorage.setItem('checkedItems',JSON.stringify(checkedItems));
+}
+
+function toggleCheckItem(i){
+  const idx=checkedItems.indexOf(i);
+  if(idx===-1) checkedItems.push(i); else checkedItems.splice(idx,1);
+  renderChecklistList();
+}
+
+function toggleChecklist(){
+  document.querySelector('.checklist-card').classList.toggle('open');
+}
+
+function loadChecklist(){
+  const d=localStorage.getItem('checkedItems');
+  if(d) checkedItems=JSON.parse(d);
+  renderChecklistList();
+}
+const tekOptions=["Oliver","Maulana","Fedryan","Andhy","Hariyanto","Hindra"];
+let selectedTeknisi=[];
 
 function saveHeader(){
   localStorage.setItem("headerData",JSON.stringify({
@@ -530,11 +818,13 @@ function loadHeader(){
   const h=JSON.parse(d);
   document.getElementById("tanggal").value=h.tanggal||"";
   document.getElementById("shift").value=h.shift||"Shift 1";
-  document.getElementById("teknisi").value=h.teknisi||"";
+  const savedTek = h.teknisi||"";
+  if(savedTek){ selectedTeknisi=savedTek.split(",").filter(Boolean); }
+  renderTekDropdown(); updateTekDisplay();
 }
 document.getElementById("tanggal").addEventListener("change",saveHeader);
 document.getElementById("shift").addEventListener("change",saveHeader);
-document.getElementById("teknisi").addEventListener("input",saveHeader);
+// teknisi is handled by dropdown
 
 function openForm(){document.getElementById("formModal").classList.add("show");updateMesin();}
 function closeForm(){
@@ -555,14 +845,73 @@ function selectArea(area,el,cls){
   updateMesin();
 }
 
-function updateMesin(){
-  const lists={
-    Proses:["Dumping Area","Powder Tank","Sugar Tank","High Shear Mixer","Choco Slurry 1","Choco Slurry 2","Reception Tank 1","Reception Tank 2","Pasteurizer","Homogenizer GEA","Pasteurize Tank 1","Pasteurize Tank 2","Mixing Tank 1","Mixing Tank 2","Storage Tank 1","Storage Tank 2","Storage Tank 3","Storage Tank 4","Sterilizer","Homogenizer Tetra","Aseptic Flex Dosing","Aseptic Tank 1","Aseptic Tank 2","CIP Aseptic","CIP Non-Aseptic Line 1","CIP Non-Aseptic Line 2","CIP Non-Aseptic Line 3","Linemaker 1&2","Linemaker 3"],
-    Filling:["Combibloc 1","Combibloc 2","Combibloc 3","Tetra A3 Flex","Domino for C1","Domino for C2","Domino for C3","Domino for Tetra"],
-    Packing:["Tetra Cap 30 Flex","Carton Sealer","Conveyor System 1","Conveyor System 2","Conveyor System 3","Conveyor Buffer 1","Conveyor Buffer 2","Conveyor Buffer 3","Straw Applicator 1","Straw Applicator 2","Straw Applicator 3","Traypacker 1","Traypacker 2","Traypacker 3","Videojet for TP1","Videojet for TP2","Videojet for TP3","Videojet for Cap 30"]
-  };
-  document.getElementById("mesin").innerHTML=(lists[selectedArea]||[]).map(x=>`<option>${x}</option>`).join("");
+const mesinLists={
+  Proses:["Dumping Area","Powder Tank","Sugar Tank","High Shear Mixer","Choco Slurry 1","Choco Slurry 2","Reception Tank 1","Reception Tank 2","Pasteurizer","Homogenizer GEA","Pasteurize Tank 1","Pasteurize Tank 2","Mixing Tank 1","Mixing Tank 2","Storage Tank 1","Storage Tank 2","Storage Tank 3","Storage Tank 4","Sterilizer","Homogenizer Tetra","Aseptic Flex Dosing","Aseptic Tank 1","Aseptic Tank 2","CIP Aseptic","CIP Non-Aseptic Line 1","CIP Non-Aseptic Line 2","CIP Non-Aseptic Line 3","Linemaker 1&2","Linemaker 3"],
+  Filling:["Combibloc 1","Combibloc 2","Combibloc 3","Tetra A3 Flex","Domino for C1","Domino for C2","Domino for C3","Domino for Tetra"],
+  Packing:["Tetra Cap 30 Flex","Carton Sealer","Conveyor System 1","Conveyor System 2","Conveyor System 3","Conveyor Buffer 1","Conveyor Buffer 2","Conveyor Buffer 3","Straw Applicator 1","Straw Applicator 2","Straw Applicator 3","Traypacker 1","Traypacker 2","Traypacker 3","Videojet for TP1","Videojet for TP2","Videojet for TP3","Videojet for Cap 30"]
+};
+
+function updateMesin(preselect){
+  const val=preselect||"";
+  document.getElementById("mesin").value=val;
+  document.getElementById("mesinSearch").value=val;
+  renderMesinList("", val);
 }
+
+function renderMesinList(query, selected){
+  const list=mesinLists[selectedArea]||[];
+  const q=query.toLowerCase().trim();
+  const filtered=q?list.filter(x=>x.toLowerCase().includes(q)):list;
+  const container=document.getElementById("mesinList");
+  if(filtered.length===0){
+    container.innerHTML=`<div class="mesin-no-result">Tidak ditemukan</div>`;
+    return;
+  }
+  container.innerHTML=filtered.map(name=>{
+    const label=q?name.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`,'gi'),'<mark>$1</mark>'):name;
+    const isSel=(name===(selected||document.getElementById("mesin").value));
+    return `<div class="mesin-option${isSel?' selected':''}" onclick="selectMesin('${name.replace(/'/g,"\\'")}')">
+      ${label}
+    </div>`;
+  }).join("");
+}
+
+function openMesinDropdown(){
+  document.getElementById("mesinWrapper").classList.add("open");
+  renderMesinList(document.getElementById("mesinSearch").value);
+}
+
+function closeMesinDropdown(){
+  const wrapper=document.getElementById("mesinWrapper");
+  wrapper.classList.remove("open");
+  // restore display value if search is empty or unmatched
+  const current=document.getElementById("mesin").value;
+  if(current) document.getElementById("mesinSearch").value=current;
+}
+
+function toggleMesinDropdown(){
+  const wrapper=document.getElementById("mesinWrapper");
+  if(wrapper.classList.contains("open")) closeMesinDropdown();
+  else { document.getElementById("mesinSearch").focus(); openMesinDropdown(); }
+}
+
+function filterMesin(){
+  const q=document.getElementById("mesinSearch").value;
+  openMesinDropdown();
+  renderMesinList(q);
+}
+
+function selectMesin(name){
+  document.getElementById("mesin").value=name;
+  document.getElementById("mesinSearch").value=name;
+  closeMesinDropdown();
+}
+
+// Close dropdown when clicking outside
+document.addEventListener("click",function(e){
+  const wrapper=document.getElementById("mesinWrapper");
+  if(wrapper && !wrapper.contains(e.target)) closeMesinDropdown();
+});
 
 function saveActivity(){
   const data={area:selectedArea,areaCls:selectedCls,mesin:document.getElementById("mesin").value,downtime:document.getElementById("downtime").value,action:document.getElementById("action").value};
@@ -593,6 +942,7 @@ function renderTable(){
           <div class="act-machine">${a.mesin}</div>
         </div>
         <div class="act-btns">
+          <div class="drag-handle" title="Drag to reorder"><i class="fa-solid fa-grip-vertical"></i></div>
           <button class="act-btn edit" onclick="editAct(${i})"><i class="fa-solid fa-pen"></i></button>
           <button class="act-btn del"  onclick="hapus(${i})"><i class="fa-solid fa-trash"></i></button>
         </div>
@@ -605,6 +955,8 @@ function renderTable(){
     `;
     table.appendChild(card);
   });
+  // re-init sortable after each render
+  if(typeof Sortable !== "undefined") initSortable();
 }
 
 function editAct(i){
@@ -615,8 +967,7 @@ function editAct(i){
   const tabs=document.querySelectorAll(".area-tab");
   tabs.forEach(t=>t.classList.remove("active","proses","filling","packing"));
   tabs[map[a.area]].classList.add("active",clsMap[a.area]);
-  updateMesin();
-  document.getElementById("mesin").value=a.mesin;
+  updateMesin(a.mesin);
   document.getElementById("downtime").value=a.downtime;
   document.getElementById("action").value=a.action;
   document.getElementById("formModal").classList.add("show");
@@ -647,6 +998,15 @@ function generateReport(){
       });
     }
   }
+  // Append checked kegiatan tambahan at bottom
+  const checked = checkedItems.map(i => checklistItems[i]);
+  if(checked.length > 0){
+    text += `
+*Kegiatan Tambahan*
+`;
+    checked.forEach(label => { text += `- ${label}
+`; });
+  }
   document.getElementById("hasil").value=text;
 }
 
@@ -666,7 +1026,7 @@ async function publish(){
   btn.classList.remove("loading");btn.innerHTML=`<i class="fa-solid fa-upload"></i> Publish`;btn.disabled=false;
 }
 
-function resetData(){activities=[];localStorage.removeItem("activities");renderTable();}
+function resetData(){activities=[];checkedItems=[];localStorage.removeItem("activities");localStorage.removeItem("checkedItems");renderTable();renderChecklistList();}
 function saveToLocal(){localStorage.setItem("activities",JSON.stringify(activities));saveHeader();}
 function loadFromLocal(){const d=localStorage.getItem("activities");if(d){activities=JSON.parse(d);renderTable();}}
 function clearForm(){document.getElementById("downtime").value="";document.getElementById("action").value="";}
@@ -675,8 +1035,101 @@ function setTodayIfEmpty(){
   if(!el.value){const d=new Date();el.value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 }
 
-loadHeader();setTodayIfEmpty();loadFromLocal();updateMesin();
-if(activities.length===0)document.getElementById("emptyState").style.display="block";
+document.addEventListener("DOMContentLoaded", function(){
+  loadHeader();setTodayIfEmpty();loadFromLocal();updateMesin();
+  loadChecklist();
+  renderTekDropdown();
+  initSortable();
+  if(activities.length===0)document.getElementById("emptyState").style.display="block";
+});
+
+// Init drag-and-drop
+let sortableInstance = null;
+function initSortable(){
+  const el = document.getElementById('activityTable');
+  if(!el) return;
+  if(sortableInstance) sortableInstance.destroy();
+  sortableInstance = Sortable.create(el, {
+    handle: '.drag-handle',
+    animation: 200,
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    dragClass: 'sortable-drag',
+    delay: 80,
+    delayOnTouchOnly: true,
+    touchStartThreshold: 3,
+    forceFallback: false,
+    fallbackTolerance: 3,
+    onChoose: function(){ document.body.classList.add('is-dragging'); },
+    onUnchoose: function(){ document.body.classList.remove('is-dragging'); },
+    onStart: function(){ document.body.classList.add('is-dragging'); },
+    onEnd: function(evt){
+      document.body.classList.remove('is-dragging');
+      if(evt.oldIndex === evt.newIndex) return;
+      const moved = activities.splice(evt.oldIndex, 1)[0];
+      activities.splice(evt.newIndex, 0, moved);
+      saveToLocal();
+      renderTable();
+    }
+  });
+}
+/* ─ TEKNISI DROPDOWN ─ */
+
+function renderTekDropdown(){
+  const list = document.getElementById("tekList");
+  list.innerHTML = tekOptions.map(name => {
+    const checked = selectedTeknisi.includes(name);
+    return `<div class="tek-option${checked?' checked':''}" onclick="toggleTeknisi('${name}')">
+      <div class="tek-check">${checked?'<i class=\"fa-solid fa-check\"></i>':''}</div>
+      ${name}
+    </div>`;
+  }).join("");
+}
+
+function updateTekDisplay(){
+  const sel = document.getElementById("tekSelected");
+  const placeholder = document.getElementById("tekPlaceholder");
+  document.getElementById("teknisi").value = selectedTeknisi.join(", ");
+  saveHeader();
+  if(selectedTeknisi.length === 0){
+    sel.innerHTML = '<span class="tek-placeholder" id="tekPlaceholder">Pilih teknisi...</span>';
+    return;
+  }
+  sel.innerHTML = selectedTeknisi.map(n =>
+    `<span class="tek-chip">${n}<span class="tek-chip-remove" onclick="removeTeknisi(event,'${n}')">✕</span></span>`
+  ).join("");
+}
+
+function toggleTeknisi(name){
+  const idx = selectedTeknisi.indexOf(name);
+  if(idx === -1) selectedTeknisi.push(name);
+  else selectedTeknisi.splice(idx, 1);
+  renderTekDropdown();
+  updateTekDisplay();
+}
+
+function removeTeknisi(e, name){
+  e.stopPropagation();
+  selectedTeknisi = selectedTeknisi.filter(n => n !== name);
+  renderTekDropdown();
+  updateTekDisplay();
+}
+
+function toggleTekDropdown(){
+  const w = document.getElementById("tekWrapper");
+  if(w.classList.contains("open")){
+    w.classList.remove("open");
+  } else {
+    w.classList.add("open");
+    renderTekDropdown();
+  }
+}
+
+document.addEventListener("click", function(e){
+  const w = document.getElementById("tekWrapper");
+  if(w && !w.contains(e.target)) w.classList.remove("open");
+});
+
 </script>
 </body>
 </html>
