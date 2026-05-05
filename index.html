@@ -1001,8 +1001,7 @@ function generateReport(){
   // Append checked kegiatan tambahan at bottom
   const checked = checkedItems.map(i => checklistItems[i]);
   if(checked.length > 0){
-    text += `
- `;
+    text += ``;
     checked.forEach(label => { text += `* ${label}
 `; });
   }
