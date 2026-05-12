@@ -994,7 +994,7 @@ function generateReport(){
       text+=`**${mesin}*\n`;
       grouped[area][mesin].forEach(d=>{
         text+=`> ${d.downtime}\n`;
-        d.action.split("\n").forEach(l=>{if(l.trim())text+=`  - ${l}\n`;});
+        d.action.split("\n").forEach(l=>{if(l.trim())text+=` - ${l}\n`;});
       });
     }
   }
